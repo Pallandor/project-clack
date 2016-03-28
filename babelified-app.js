@@ -24,6 +24,26 @@ var Chat = React.createClass({
         this.setState({ name: newName });
     },
 
+    setMsg: function setMsg(event) {
+
+        var text = event.target.value;
+        if (event.keyCode == 13 && text !== '') {
+
+            var newMessage = {
+                name: this.state.name,
+                time: new Date(),
+                text: text
+            };
+
+            var updatedMessages = this.state.messages.slice();
+            updatedMessages.push(newMessage);
+
+            this.setState({ messages: updatedMessages });
+
+            event.target.value = '';
+        }
+    },
+
     render: function render() {
         var msgsArr = this.state.messages.map(function (msg, i) {
             return React.createElement(
@@ -153,7 +173,7 @@ var Chat = React.createClass({
                 React.createElement(
                     'div',
                     { className: 'input-box' },
-                    React.createElement('input', { type: 'text', className: 'input-box_text' })
+                    React.createElement('input', { type: 'text', className: 'input-box_text', onKeyDown: this.setMsg })
                 )
             )
         );
