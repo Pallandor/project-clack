@@ -19,6 +19,11 @@ var Chat = React.createClass({
         };
     },
 
+    componentDidUpdate: function componentDidUpdate() {
+        var mList = document.getElementById('message-list');
+        mList.scrollTop = mList.scrollHeight;
+    },
+
     setName: function setName() {
         var newName = window.prompt('whats yo name fool?', 'anonyomous');
         this.setState({ name: newName });
