@@ -6,13 +6,13 @@ var Chat = React.createClass({
 
     getInitialState: function getInitialState() {
         return {
-            name: "Roger",
+            name: "codeupstart",
             messages: [{
                 name: 'Roger',
                 time: new Date(),
                 text: 'I sneaked this in using my stuff😘'
             }, {
-                name: 'Bearstyles',
+                name: 'Rodrigo',
                 time: new Date(),
                 text: 'This is other message crap'
             }]
@@ -21,22 +21,7 @@ var Chat = React.createClass({
 
     setName: function setName() {
         var newName = window.prompt('whats yo name fool?', 'anonyomous');
-        var currentName = this.state.name;
-        this.state.messages.forEach(function (msg) {
-            if (msg.name === currentName) {
-                msg.name = newName;
-            }
-        });
-        this.state.name = newName;
-
-        //console.log(this.state.messages);
-        //this.setState({name: newName});
-        this.setState({}); // does this auto check for differences between rendered dom and... what
-
-        // interesting: i shouldn't be doing this apparently lol
-        // https://facebook.github.io/react/docs/component-api.html
-
-        //this.setState({messages: this.state.messages});  // just pass on the changes to the setState func merely to tirgger re-rendering
+        this.setState({ name: newName });
     },
 
     render: function render() {
@@ -46,12 +31,12 @@ var Chat = React.createClass({
                 { key: i, className: 'message' },
                 React.createElement(
                     'a',
-                    { href: 'https://twitter.com/codeupstart/', target: '_blank' },
-                    React.createElement('img', { src: 'https://twitter.com/codeupstart/profile_image', className: 'message_profile-pic' })
+                    { href: "https://twitter.com/" + msg.name + "/", target: '_blank' },
+                    React.createElement('img', { src: "https://twitter.com/" + msg.name + "/profile_image", className: 'message_profile-pic' })
                 ),
                 React.createElement(
                     'a',
-                    { href: 'https://twitter.com/codeupstart/', target: '_blank', className: 'message_username' },
+                    { href: "https://twitter.com/" + msg.name + "/", target: '_blank', className: 'message_username' },
                     msg.name
                 ),
                 React.createElement(
@@ -65,10 +50,6 @@ var Chat = React.createClass({
                     msg.text
                 )
             );
-
-            // then reference in {messages} in relevant HTML part, well messages is an arr so
-            // msgsArr.join('');
-            // why didn't the above work...
         });
 
         return React.createElement(
@@ -153,55 +134,7 @@ var Chat = React.createClass({
                             { className: 'time-divide' },
                             React.createElement('span', { className: 'date' })
                         ),
-                        msgsArr,
-                        React.createElement(
-                            'div',
-                            { className: 'message' },
-                            React.createElement(
-                                'a',
-                                { href: 'https://twitter.com/codeupstart/', target: '_blank' },
-                                React.createElement('img', { src: 'https://twitter.com/codeupstart/profile_image', className: 'message_profile-pic' })
-                            ),
-                            React.createElement(
-                                'a',
-                                { href: 'https://twitter.com/codeupstart/', target: '_blank', className: 'message_username' },
-                                'codeupstart'
-                            ),
-                            React.createElement(
-                                'span',
-                                { className: 'message_timestamp' },
-                                '1:31 PM'
-                            ),
-                            React.createElement(
-                                'span',
-                                { className: 'message_content' },
-                                'Hi there! 😘'
-                            )
-                        ),
-                        React.createElement(
-                            'div',
-                            { className: 'message' },
-                            React.createElement(
-                                'a',
-                                { href: 'https://twitter.com/codeupstart/', target: '_blank' },
-                                React.createElement('img', { src: 'https://twitter.com/codeupstart/profile_image', className: 'message_profile-pic' })
-                            ),
-                            React.createElement(
-                                'a',
-                                { href: 'https://twitter.com/codeupstart/', target: '_blank', className: 'message_username' },
-                                'codeupstart'
-                            ),
-                            React.createElement(
-                                'span',
-                                { className: 'message_timestamp' },
-                                '1:31 PM'
-                            ),
-                            React.createElement(
-                                'span',
-                                { className: 'message_content' },
-                                'Welcome to your chat app'
-                            )
-                        )
+                        msgsArr
                     )
                 )
             ),
