@@ -107,11 +107,11 @@ var Chat = React.createClass({
             newName = 'anonymous' + randomId;
         }
         this.setState({ name: newName });
+        this.closeModal;
     },
 
     onEnter: function onEnter(e) {
         if (e.nativeEvent.keyCode != 13) return;
-        console.log('insinde onEnter');
         this.enterName();
     },
 
@@ -152,6 +152,7 @@ var Chat = React.createClass({
                 Modal,
                 {
                     isOpen: !this.state.name,
+                    onRequestClose: this.enterName,
                     style: customStyles },
                 React.createElement(
                     'h2',
