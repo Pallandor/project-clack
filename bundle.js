@@ -146,30 +146,45 @@ var customStyles = {
     }
 };
 
+var DEFAULT_CHANNEL = 'general';
+
 var Chat = React.createClass({
     displayName: 'Chat',
 
     getInitialState: function getInitialState() {
         return {
             name: null,
-            messages: [{
-                name: 'Roger',
-                time: new Date(),
-                text: 'I sneaked this in using my stuff😘'
-            }, {
-                name: 'Rodrigo',
-                time: new Date(),
-                text: 'This is other message stuff lmao 😘😘😘'
-            }],
-            channels: ['personal'],
-            currentChannel: 'general'
+            messages: {},
+            channels: [],
+            currentChannel: null
         };
     },
 
-    componentDidMount: function componentDidMount() {},
+    componentDidMount: function componentDidMount() {
+        this.createChannel(DEFAULT_CHANNEL);
+
+        var messages = {};
+        messages[DEFAULT_CHANNEL] = [{
+            name: 'Roger',
+            time: new Date().toLocaleTimeString(),
+            text: 'I sneaked this in using my stuff😘'
+        }, {
+            name: 'Rodrigo',
+            time: new Date().toLocaleTimeString(),
+            text: 'This is other message stuff lmao 😘😘😘'
+        }];
+
+        this.setState({
+            messages: messages
+        });
+    },
 
     componentDidUpdate: function componentDidUpdate() {
         var mList = document.getElementById('message-list');
+        // MY CODE
+        if (!mList) {
+            return;
+        }
         mList.scrollTop = mList.scrollHeight;
     },
 
@@ -191,16 +206,22 @@ var Chat = React.createClass({
     setMsg: function setMsg(event) {
         var text = event.target.value;
         if (event.keyCode == 13 && text !== '') {
-
             var newMessage = {
                 name: this.state.name,
-                time: new Date(),
+                time: new Date().toLocaleTimeString(),
                 text: text
             };
 
-            var updatedMessages = this.state.messages.slice();
-            updatedMessages.push(newMessage);
+            // let updatedMessages = this.state.messages.slice();
+            // updatedMessages.push(newMessage);
 
+            // this.setState({messages: updatedMessages});
+
+            // var updatedMessages = this.state.messages[this.state.currentChannel].slice();
+            var updatedMessages = JSON.parse(JSON.stringify(this.state.messages));
+            // var updatedMessages = this.state.messages;
+            updatedMessages[this.state.currentChannel] = updatedMessages[this.state.currentChannel] || [];
+            updatedMessages[this.state.currentChannel].push(newMessage);
             this.setState({ messages: updatedMessages });
 
             event.target.value = '';
@@ -209,6 +230,8 @@ var Chat = React.createClass({
 
     createChannel: function createChannel(channelName) {
         if (!this.state.channels.hasOwnProperty(channelName)) {
+            var messages = this.state.messages;
+
             this.setState({ channels: this.state.channels.concat(channelName) });
             this.joinChannel(channelName);
         }
@@ -265,7 +288,8 @@ var Chat = React.createClass({
                             { className: 'channel-menu_prefix' },
                             '#'
                         ),
-                        ' general'
+                        ' ',
+                        this.state.currentChannel
                     )
                 )
             ),
@@ -286,7 +310,7 @@ var Chat = React.createClass({
                 React.createElement(
                     'div',
                     { className: 'message-history' },
-                    React.createElement(Messages, { messages: this.state.messages })
+                    React.createElement(Messages, { messages: this.state.messages[this.state.currentChannel] })
                 )
             ),
             React.createElement(
@@ -318,6 +342,8 @@ module.exports = Chat;
 },{"./channels":1,"./messages":3,"react":180,"react-dom":44,"react-modal":51}],3:[function(require,module,exports){
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 var React = require('react');
 var ReactDOM = require('react-dom');
 
@@ -327,7 +353,14 @@ var Messages = React.createClass({
 
 	render: function render() {
 
+		if (!this.props.messages) {
+			return null;
+		}
+
 		var msgsArr = this.props.messages.map(function (msg, i) {
+
+			console.log(_typeof(msg.time));
+
 			return React.createElement(
 				'div',
 				{ key: i, className: 'message' },
@@ -344,7 +377,7 @@ var Messages = React.createClass({
 				React.createElement(
 					'span',
 					{ className: 'message_timestamp' },
-					msg.time.toLocaleTimeString()
+					msg.time
 				),
 				React.createElement(
 					'span',
