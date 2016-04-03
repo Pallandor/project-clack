@@ -44,12 +44,18 @@ var Channels = React.createClass({
 				}
 		},
 
+		switchChannel: function switchChannel(channel) {
+				this.props.joinChannel(channel);
+		},
+
 		render: function render() {
+				var that = this;
+				var currentChannel = this.props.currentChannel;
 
 				var channelList = this.props.channels.map(function (channel, i) {
 						return React.createElement(
 								'li',
-								{ key: i, className: 'channel active' },
+								{ key: i, className: channel === currentChannel ? 'channel active' : 'channel', onClick: that.switchChannel.bind(that, channel) },
 								React.createElement(
 										'a',
 										{ className: 'channel_name' },
@@ -155,9 +161,12 @@ var Chat = React.createClass({
                 time: new Date(),
                 text: 'This is other message stuff lmao 😘😘😘'
             }],
-            channels: ['personal']
+            channels: ['personal'],
+            currentChannel: 'general'
         };
     },
+
+    componentDidMount: function componentDidMount() {},
 
     componentDidUpdate: function componentDidUpdate() {
         var mList = document.getElementById('message-list');
@@ -201,19 +210,15 @@ var Chat = React.createClass({
     createChannel: function createChannel(channelName) {
         if (!this.state.channels.hasOwnProperty(channelName)) {
             this.setState({ channels: this.state.channels.concat(channelName) });
+            this.joinChannel(channelName);
         }
     },
 
+    joinChannel: function joinChannel(channelName) {
+        this.setState({ currentChannel: channelName });
+    },
+
     render: function render() {
-
-        // Research: How to Messages.setState({blah: blah blah});
-
-        // Messages.setState(function(prevState, currentProps){
-        //     return {something: prevState.something+'UGH'};
-        // });
-
-        // var m = ReactDOM.render(<Messages />, document.getElementById('tester'));
-        // m.setState({some: 'other'});
 
         return React.createElement(
             'div',
@@ -270,7 +275,12 @@ var Chat = React.createClass({
                 React.createElement(
                     'div',
                     { className: 'listings' },
-                    React.createElement(Channels, { channels: this.state.channels, createChannel: this.createChannel }),
+                    React.createElement(Channels, {
+                        channels: this.state.channels,
+                        createChannel: this.createChannel,
+                        currentChannel: this.state.currentChannel,
+                        joinChannel: this.joinChannel
+                    }),
                     React.createElement('div', { className: 'listings_direct-messages' })
                 ),
                 React.createElement(
