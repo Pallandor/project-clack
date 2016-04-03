@@ -3,59 +3,123 @@
 
 var React = require('react');
 var ReactDOM = require('react-dom');
+var Modal = require('react-modal');
+
+var customStyles = {
+		content: {
+				top: '50%',
+				left: '50%',
+				right: 'auto',
+				bottom: 'auto',
+				marginRight: '-50%',
+				transform: 'translate(-50%, -50%)'
+		}
+};
 
 var Channels = React.createClass({
-	displayName: 'Channels',
+		displayName: 'Channels',
 
 
-	render: function render() {
+		getInitialState: function getInitialState() {
+				return { modalIsOpen: false };
+		},
 
-		var channelList = this.props.channels.map(function (channel, i) {
-			return React.createElement(
-				'li',
-				{ key: i, className: 'channel active' },
-				React.createElement(
-					'a',
-					{ className: 'channel_name' },
-					React.createElement(
-						'span',
-						{ className: 'unread' },
-						'0'
-					),
-					React.createElement(
-						'span',
-						null,
+		openModal: function openModal() {
+				this.setState({ modalIsOpen: true });
+		},
+
+		closeModal: function closeModal() {
+				this.setState({ modalIsOpen: false });
+		},
+
+		joinNewChannel: function joinNewChannel() {
+				var new_channel = $('#new-channel-name').val();
+				this.props.createChannel(new_channel);
+				this.closeModal();
+		},
+
+		onEnter: function onEnter(e) {
+				if (e.nativeEvent.keyCode === 13) {
+						this.joinNewChannel();
+				}
+		},
+
+		render: function render() {
+
+				var channelList = this.props.channels.map(function (channel, i) {
+						return React.createElement(
+								'li',
+								{ key: i, className: 'channel active' },
+								React.createElement(
+										'a',
+										{ className: 'channel_name' },
+										React.createElement(
+												'span',
+												{ className: 'unread' },
+												'0'
+										),
+										React.createElement(
+												'span',
+												null,
+												React.createElement(
+														'span',
+														{ className: 'prefix' },
+														'#'
+												),
+												channel
+										)
+								)
+						);
+				});
+
+				return React.createElement(
+						'div',
+						{ className: 'listings_channels' },
 						React.createElement(
-							'span',
-							{ className: 'prefix' },
-							'#'
+								'span',
+								{ className: 'add_icon', onClick: this.openModal },
+								'+'
 						),
-						channel
-					)
-				)
-			);
-		});
-
-		return React.createElement(
-			'div',
-			{ className: 'listings_channels' },
-			React.createElement(
-				'h2',
-				{ className: 'listings_header' },
-				'Channels'
-			),
-			React.createElement(
-				'ul',
-				{ className: 'channel_list' },
-				channelList
-			)
-		);
-	}
+						React.createElement(
+								'h2',
+								{ className: 'listings_header' },
+								'Channels'
+						),
+						React.createElement(
+								'ul',
+								{ className: 'channel_list' },
+								channelList
+						),
+						React.createElement(
+								Modal,
+								{
+										isOpen: this.state.modalIsOpen,
+										onRequestClose: this.closeModal,
+										style: customStyles },
+								React.createElement(
+										'h2',
+										{ className: 'text-center' },
+										'Enter a channel to join'
+								),
+								React.createElement(
+										'div',
+										null,
+										'# ',
+										React.createElement('input', { id: 'new-channel-name', type: 'text', onKeyPress: this.onEnter }),
+										React.createElement(
+												'button',
+												{ className: 'btn', onClick: this.joinNewChannel },
+												'Join'
+										)
+								)
+						)
+				);
+		}
 });
 
 module.exports = Channels;
 
-},{"react":180,"react-dom":44}],2:[function(require,module,exports){
+},{"react":180,"react-dom":44,"react-modal":51}],2:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -134,6 +198,12 @@ var Chat = React.createClass({
         }
     },
 
+    createChannel: function createChannel(channelName) {
+        if (!this.state.channels.hasOwnProperty(channelName)) {
+            this.setState({ channels: this.state.channels.concat(channelName) });
+        }
+    },
+
     render: function render() {
 
         // Research: How to Messages.setState({blah: blah blah});
@@ -200,7 +270,7 @@ var Chat = React.createClass({
                 React.createElement(
                     'div',
                     { className: 'listings' },
-                    React.createElement(Channels, { channels: this.state.channels }),
+                    React.createElement(Channels, { channels: this.state.channels, createChannel: this.createChannel }),
                     React.createElement('div', { className: 'listings_direct-messages' })
                 ),
                 React.createElement(
